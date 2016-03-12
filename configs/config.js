@@ -22,7 +22,7 @@ config.PRODUCTION_CLOUD_DIRECTORY = '/app-storage';
 //config.DEVELOPMENT_BASE_URL = 'http://136b3f15.ngrok.com';
 config.DEVELOPMENT_BASE_URL = 'http://localhost:3000';
 config.PRODUCTION_BASE_URL = 'http://imoneycheck.mybluemix.net';
-config.GCM_API_KEY ="AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk";
+config.GCM_API_KEY ="AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk"; //kodebees@gmail.com
 
 module.exports = config;
 
