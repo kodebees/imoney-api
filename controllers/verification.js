@@ -1,6 +1,7 @@
 var mobileVerification = require('../models/mobile_verification');
 var aadharVerification = require('../models/aadhar_verification');
 var Customer = require('../models/customer');
+var Aadhar = require('../models/aadhar');
 var unirest = require('unirest');
 exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
@@ -29,69 +30,99 @@ exports.verifyAadharNumber = function (req, res) {
         }
         else {
             var result = {};
-            //request the ncp api for verfiy and get ekyc of customer
-            //get the response
-            result.aadhar_id = doc._id;
-            result.message = "confirm the aadhar info and mobile number";
-            var customerInfo = new Customer();
-            customerInfo.mobile_number = "9525";
-            customerInfo.first_name ="fname";
-            customerInfo.last_name="lname";
-            customerInfo.email="test@test.com";
-            customerInfo.gender ="M";
 
-            customerInfo.address={
-                "street":"12 Maulana Azad Marg",
-                "vtc":"New Delhi",
-                "subdist":"New Delhi",
-                "district":"New Delhi",
-                "state":"New delhi",
-                "pincode":"110002"
-            };
-            customerInfo.dob= new Date("26-05-1989");
-            customerInfo.save(
-                function(err,newCustomer)
+            //check if customer already exist in our system
+            Customer.findOne({aadhar_number: req.body.aadhar_number}, function (error, customerInfo) {
+                if(customerInfo)
                 {
-                    if (err) {
-                        var errMessage = [];
 
-                        // go through all the errors...
-                        for (var errName in err.errors) {
-                            var message = err.errors[errName].message
-                            var errors = {};
-                            errors[errName] = message
-                            errMessage.push(errors);
-                        }
-                        console.log(err);
-                        var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
-                        res.send(errorResponse);
-                        return;
-                    }
-                    if(newCustomer){
-                        result.customerInfo = customerInfo;
-                        result.message ="Confirm your mobile number";
-                        var response = {"success": true, "result": result};
-
-
-                        res.send(response)
-                    }
+                    result.customerInfo = customerInfo;
+                    result.message ="Confirm your mobile number again, Welcome back to imoney";
+                    var response = {"success": true, "result": result};
+                    res.send(response)
                 }
-            );
-            result.aadhar_info = {"aadhar_number": doc.aadhar_number,
-                "first_name": "firstName",
-                "last_name": "lastName",
-                "email": "test@test.com",
-                "mobile_number": "9874563210",
-                "gender": "M",
-                "address":{
-                    "street":"12 Maulana Azad Marg",
-                    "vtc":"New Delhi",
-                    "subdist":"New Delhi",
-                    "district":"New Delhi",
-                    "state":"New delhi",
-                    "pincode":"110002"
-                },
-                "dob": "26-05-1989"}
+                else
+                {
+                    //request the ncp api for verfiy and get ekyc of customer
+                    //get the response
+
+                    //mock from local db
+                    Aadhar.findOne({uid: req.body.aadhar_number}, function (error, aadharInfo) {
+                        if(error)
+                        {
+                            console.log("error"+error);
+                            var err = new Error();
+                            err.status = 101; //undefined
+                            err.message =error;
+                            var errorResponse = {"success": false, "error": err};//validation error
+                            res.send(errorResponse);
+                        }
+                        else if(aadharInfo)
+                        {
+                            console.log(aadharInfo);
+
+                            result.message = "confirm the aadhar info and mobile number";
+                            var customerInfo = new Customer();
+                            customerInfo.mobile_number = aadharInfo.phone;
+                            customerInfo.aadhar_number = aadharInfo.uid;
+                            customerInfo.first_name =aadharInfo.first_name;
+                            customerInfo.last_name=aadharInfo.last_name;
+                            customerInfo.email=aadharInfo.email;
+                            customerInfo.gender =aadharInfo.gender;
+
+                            customerInfo.address={
+                                "street":aadharInfo.street,
+                                "vtc":aadharInfo.vtc,
+                                "subdist":aadharInfo.subdist,
+                                "district":aadharInfo.district,
+                                "state":aadharInfo.state,
+                                "pincode":aadharInfo.pincode
+                            };
+                            customerInfo.dob= aadharInfo.dob;
+                            customerInfo.save(
+                                function(err,newCustomer)
+                                {
+                                    if (err) {
+                                        var errMessage = [];
+
+                                        // go through all the errors...
+                                        for (var errName in err.errors) {
+                                            var message = err.errors[errName].message
+                                            var errors = {};
+                                            errors[errName] = message
+                                            errMessage.push(errors);
+                                        }
+                                        console.log(err);
+                                        var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
+                                        res.send(errorResponse);
+                                        return;
+                                    }
+                                    if(newCustomer){
+                                        result.customerInfo = customerInfo;
+                                        result.message ="Confirm your mobile number";
+                                        var response = {"success": true, "result": result};
+
+
+                                        res.send(response)
+                                    }
+                                }
+                            );
+                        }
+                        else
+                        {
+                            var err = new Error();
+                            err.status = 404; //undefined
+                            err.message ="No Number found in Aadahar DB";
+                            var errorResponse = {"success": false, "error": err};//validation error
+                            res.send(errorResponse);
+                        }
+
+                    });
+                }
+            });
+
+
+
         }
 
 

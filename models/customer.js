@@ -18,8 +18,8 @@ var mobileNumberValidator = [
 var aadharNumberValidator = [
     validate({
         validator: 'isLength',
-        arguments: [10, 10],
-        message: 'Require 10 digit mobile number'
+        arguments: [12, 12],
+        message: 'Require 10 digit Aadhar number'
     }),
     validate({
         validator: 'isNumeric',
@@ -33,7 +33,9 @@ var customerSchema = new Schema({
     "aadhar_number": { type: String, required: true, validate: aadharNumberValidator, unique: true},
     "first_name": {type: String, required: true},
     "last_name": {type: String, required: true},
-    "dob": {type: Date},
+    "dob": {type: String},
+    "is_phone_verified":{type:Boolean,default:false},
+    "is_email_verified":{type:Boolean,default:false},
     "address": {
         "street": {type: String, required: true},
         "vtc": {type: String, required: true},
@@ -45,10 +47,10 @@ var customerSchema = new Schema({
     "gender": {},
     "email": {type: String, required: true, unique: true},
     "device": {
-        model: {type: String, required: true},
-        platform: {type: String, required: true},
-        uuid: {type: String, required: true},
-        version: {type: String, required: true},
+        model: {type: String},
+        platform: {type: String},
+        uuid: {type: String},
+        version: {type: String},
         push_token: {type: String},
         imei: {type: String}
     },
