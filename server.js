@@ -158,8 +158,10 @@ app.use(function(err, req, res, next) {
 // 103 Invalid parameters
 // 104 duplicate mobile number
 // 105 verification code and mobile number does not match
-router.route('/sendCode')
+router.route('/verify/mobile')
     .post(VerificationController.verifyMobileNumber);
+router.route('/verify/aadhar')
+    .post(VerificationController.verifyAadharNumber);
 router.route('/testauth')
     .post(apiController.getAuthToken);
    
