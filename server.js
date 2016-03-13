@@ -16,6 +16,7 @@ var VerificationController = require('./controllers/verification');
 var apiController = require('./controllers/icici_controller');
 var commonController = require('./controllers/common');
 var aadharController = require('./controllers/aadhar');
+var customerController = require('./controllers/customer');
 
 // Local variables..
 var DBURI;
@@ -163,6 +164,10 @@ router.route('/verify/mobile')
     .post(VerificationController.verifyMobileNumber);
 router.route('/verify/aadhar')
     .post(VerificationController.verifyAadharNumber);
+
+//verify mobile verification code and update device
+router.route('/customer/device')
+    .post(customerController.updateDevice);
 router.route('/testauth')
     .post(apiController.getAuthToken);
 

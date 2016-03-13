@@ -46,7 +46,7 @@ var customerSchema = new Schema({
     },
     "gender": {},
     "email": {type: String, required: true, unique: true},
-    "device": {
+    "deviceInfo": {
         model: {type: String},
         platform: {type: String},
         uuid: {type: String},
