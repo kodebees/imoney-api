@@ -14,7 +14,8 @@ var config = require('./configs/config');
 //Creating Controllers
 var VerificationController = require('./controllers/verification');
 var apiController = require('./controllers/icici_controller');
-var commonController = require('./controllers/common')
+var commonController = require('./controllers/common');
+var aadharController = require('./controllers/aadhar');
 
 // Local variables..
 var DBURI;
@@ -164,6 +165,9 @@ router.route('/verify/aadhar')
     .post(VerificationController.verifyAadharNumber);
 router.route('/testauth')
     .post(apiController.getAuthToken);
+
+/*Creating Dummy aadhar*/
+router.route('/aadhar').post(aadharController.createAadhar);
    
 
 var server = app.listen(PORT, function () {

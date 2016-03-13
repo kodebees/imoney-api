@@ -1,5 +1,6 @@
 var mobileVerification = require('../models/mobile_verification');
 var aadharVerification = require('../models/aadhar_verification');
+var Customer = require('../models/customer');
 var unirest = require('unirest');
 exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
@@ -32,20 +33,68 @@ exports.verifyAadharNumber = function (req, res) {
             //get the response
             result.aadhar_id = doc._id;
             result.message = "confirm the aadhar info and mobile number";
+            var customerInfo = new Customer();
+            customerInfo.mobile_number = "9525";
+            customerInfo.first_name ="fname";
+            customerInfo.last_name="lname";
+            customerInfo.email="test@test.com";
+            customerInfo.gender ="M";
+
+            customerInfo.address={
+                "street":"12 Maulana Azad Marg",
+                "vtc":"New Delhi",
+                "subdist":"New Delhi",
+                "district":"New Delhi",
+                "state":"New delhi",
+                "pincode":"110002"
+            };
+            customerInfo.dob= new Date("26-05-1989");
+            customerInfo.save(
+                function(err,newCustomer)
+                {
+                    if (err) {
+                        var errMessage = [];
+
+                        // go through all the errors...
+                        for (var errName in err.errors) {
+                            var message = err.errors[errName].message
+                            var errors = {};
+                            errors[errName] = message
+                            errMessage.push(errors);
+                        }
+                        console.log(err);
+                        var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
+                        res.send(errorResponse);
+                        return;
+                    }
+                    if(newCustomer){
+                        result.customerInfo = customerInfo;
+                        result.message ="Confirm your mobile number";
+                        var response = {"success": true, "result": result};
+
+
+                        res.send(response)
+                    }
+                }
+            );
             result.aadhar_info = {"aadhar_number": doc.aadhar_number,
                 "first_name": "firstName",
                 "last_name": "lastName",
                 "email": "test@test.com",
                 "mobile_number": "9874563210",
                 "gender": "M",
-                "address": "address info",
-                "dob": "26/05/1989"}
+                "address":{
+                    "street":"12 Maulana Azad Marg",
+                    "vtc":"New Delhi",
+                    "subdist":"New Delhi",
+                    "district":"New Delhi",
+                    "state":"New delhi",
+                    "pincode":"110002"
+                },
+                "dob": "26-05-1989"}
         }
 
-        var response = {"success": true, "result": result};
 
-
-        res.send(response)
     });
 }
 exports.verifyMobileNumber = function (req, res) {

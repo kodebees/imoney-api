@@ -34,7 +34,14 @@ var customerSchema = new Schema({
     "first_name": {type: String, required: true},
     "last_name": {type: String, required: true},
     "dob": {type: Date},
-    "address": {},
+    "address": {
+        "street": {type: String, required: true},
+        "vtc": {type: String, required: true},
+        "subdist": {type: String, required: true},
+        "district": {type: String, required: true},
+        "state": {type: String, required: true},
+        "pincode": {type: String, required: true}
+    },
     "gender": {},
     "email": {type: String, required: true, unique: true},
     "device": {
@@ -42,25 +49,26 @@ var customerSchema = new Schema({
         platform: {type: String, required: true},
         uuid: {type: String, required: true},
         version: {type: String, required: true},
-        gcm_id: {type: String},
+        push_token: {type: String},
         imei: {type: String}
     },
-    "application_version":{type: String},
+    "application_version": {type: String},
     "wallet": {
-        id: {type: number},
+        id: {type: Number},
         created_datetime: {type: Date},
-        updated_datetime:{type:Date},
+        updated_datetime: {type: Date},
         token: {type: String},
-        balance: {type: number}
+        balance: {type: Number}
     },
-    "transactions":[
+    "transactions": [
         {transaction_type: {type: String}, //debit,credit
-        description: {type: String},
-        amount: {type: number},
-        created_datetime:{type:Date}
-        }],
+            description: {type: String},
+            amount: {type: Number},
+            created_datetime: {type: Date}
+        }
+    ],
 
-    "lock_amount":{type:number}
+    "lock_amount": {type: Number}
 })
 
-	
+module.exports = mongoose.model('customer', customerSchema);
