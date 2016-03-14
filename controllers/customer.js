@@ -59,6 +59,33 @@ exports.updateDevice = function (req, res) {
     })
 
 }
+exports.lockAmount = function(req,res){
+    var customerId = req.headers.customerid;
+   var lock_amount = req.body.amount;
+    Customer.findById(customerId, function (err, customer) {
+        if(customer.wallet.balance > lock_amount){
+            //update the locker amount
+            customer.locker_amount = lock_amount;
+            customer.save()
+            var result = {};
+            result.message = "Wallet Balance";
+            result.amount = customer.wallet.balance;
+            result.locker_amount = customer.locker_amount;
+            var response = {"success": true, "result": result};
+            res.send(response);
+        }
+        else
+        { var errorResponse = {
+            "success": false,
+            "error": {"code": 102, "message": "No sufficent fund to lock"}
+        };
+            res.send(errorResponse);
+            return;
+
+        }
+    });
+}
+
 exports.getBalance = function(req,res){
     var customerId = req.headers.customerid;
 

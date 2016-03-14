@@ -93,7 +93,7 @@ var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
 router.use('/wallet', commonController.isCustomerExist);
-
+router.use('/customer', commonController.isCustomerExist);
 
 
 // Register all our routes with /api
@@ -171,6 +171,10 @@ router.route('/customer/device')
 //getWalletBalance and locker_amount
 router.route('/wallet/balance')
     .get(customerController.getBalance);
+
+//Update the locker amount
+router.route('/customer/locker_amount')
+    .put(customerController.lockAmount);
 router.route('/testauth')
     .post(apiController.getAuthToken);
 
