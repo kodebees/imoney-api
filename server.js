@@ -92,7 +92,7 @@ conn.on('disconnected', function () {
 var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
-router.use('/wallet', commonController.isCustomerExist);
+router.use('/wallet', commonController.isCustomerVerified);
 router.use('/customer', commonController.isCustomerExist);
 
 
@@ -124,13 +124,15 @@ app.put('*', function(req, res, next) {
 
 app.use(function(err, req, res, next) {
     console.log("Handling error");
+    err.success = false;
     switch (err.status)
     {
+
         case 404:
             res.send(err || '** no imoney here **');
             break;
         case 101://undefined
-            res.send(err.message || "invalid parameter");
+            res.send(err || "invalid parameter");
             console.log(err);
             break;
         case 102:
@@ -173,7 +175,7 @@ router.route('/wallet/balance')
     .get(customerController.getBalance);
 
 //Update the locker amount
-router.route('/customer/locker_amount')
+router.route('/wallet/locker_amount')
     .put(customerController.lockAmount);
 router.route('/testauth')
     .post(apiController.getAuthToken);
