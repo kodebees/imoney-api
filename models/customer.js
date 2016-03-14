@@ -60,7 +60,7 @@ var customerSchema = new Schema({
         created_datetime: {type: Date},
         updated_datetime: {type: Date},
         token: {type: String},
-        balance: {type: Number}
+        balance: {type: Number,default:0}
     },
     "transactions": [
         {transaction_type: {type: String}, //debit,credit
@@ -70,7 +70,7 @@ var customerSchema = new Schema({
         }
     ],
 
-    "lock_amount": {type: Number}
+    "locker_amount": {type: Number,default:0}
 })
 
 module.exports = mongoose.model('customer', customerSchema);

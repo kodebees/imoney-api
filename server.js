@@ -92,7 +92,7 @@ conn.on('disconnected', function () {
 var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
-
+router.use('/wallet', commonController.isCustomerExist);
 
 
 
@@ -127,21 +127,21 @@ app.use(function(err, req, res, next) {
     switch (err.status)
     {
         case 404:
-            res.send(err.message || '** no imoney here **');
+            res.send(err || '** no imoney here **');
             break;
         case 101://undefined
             res.send(err.message || "invalid parameter");
-            console.log(err.status);
+            console.log(err);
             break;
         case 102:
-            res.send(err.message || "invalid appid");
+            res.send(err || "invalid appid");
             break;
         case 103:
-            res.send(err.message || "invalid parameter");
-            console.log(err.status);
+            res.send(err || "invalid parameter");
+            console.log(err);
             break;
         case 104:
-            res.send(err.message || "invalid device ");
+            res.send(err || "invalid device ");
             break;
         case 105:
             var error ={};
@@ -168,6 +168,9 @@ router.route('/verify/aadhar')
 //verify mobile verification code and update device
 router.route('/customer/device')
     .post(customerController.updateDevice);
+//getWalletBalance and locker_amount
+router.route('/wallet/balance')
+    .get(customerController.getBalance);
 router.route('/testauth')
     .post(apiController.getAuthToken);
 

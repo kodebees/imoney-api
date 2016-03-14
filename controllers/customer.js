@@ -59,3 +59,23 @@ exports.updateDevice = function (req, res) {
     })
 
 }
+exports.getBalance = function(req,res){
+    var customerId = req.headers.customerid;
+
+    Customer.findById(customerId, function (err, customer) {
+        if (err) {
+            console.log("Error")
+            return res.status(600).send({error: err});
+        }
+        if (customer) {
+            console.log(customer);
+            var result = {};
+            result.message = "Wallet Balance";
+            result.amount = customer.wallet.balance;
+            result.locker_amount = customer.locker_amount;
+            var response = {"success": true, "result": result};
+            res.send(response);
+            return;
+        }
+    });
+}
