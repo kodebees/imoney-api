@@ -54,9 +54,10 @@ var customerSchema = new Schema({
         push_token: {type: String},
         imei: {type: String}
     },
+    "ip_address" : {type:String},
     "application_version": {type: String},
     "wallet": {
-        id: {type: Number},
+        id: {type: String},
         created_datetime: {type: Date},
         updated_datetime: {type: Date},
         token: {type: String},

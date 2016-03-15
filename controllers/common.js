@@ -1,7 +1,6 @@
 
 var Customer = require('../models/customer');
 
-
 exports.checkApiKey = function (req, res, next) {
     console.log("checking header");
     if(req.headers.appid == undefined)
@@ -88,3 +87,15 @@ exports.isCustomerExist = function (req, res, next) {
 
 };
 
+exports.composeSuccessResponse =function(res){
+
+                    var response = {"success": true, "result": res};
+                    return response;
+
+}
+
+exports.composeFailureResponse =function(res) {
+
+                    var response = {"success": false, "result": res};
+                    return response;
+}

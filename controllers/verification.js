@@ -3,6 +3,7 @@ var aadharVerification = require('../models/aadhar_verification');
 var Customer = require('../models/customer');
 var Aadhar = require('../models/aadhar');
 var unirest = require('unirest');
+
 exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
     new aadharVerification(req.body).save(function (err, doc) {

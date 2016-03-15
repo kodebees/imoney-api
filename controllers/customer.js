@@ -1,5 +1,7 @@
 var Customer = require('../models/customer');
 var mobileVerification = require('../models/mobile_verification');
+var blueMixBrokerController = require('./bluemixcontroller');
+var commonController = require('./common');
 
 exports.updateDevice = function (req, res) {
     var number = req.body.mobile_number;
@@ -29,12 +31,44 @@ exports.updateDevice = function (req, res) {
                     return res.status(600).send({error: err});
                 }
                 if (customer) {
-                    console.log(customer);
-                    var result = {};
-                    result.message = "Mobile Number verified Successfully";
-                    var response = {"success": true, "result": result};
-                    res.send(response);
-                    return;
+
+                    customer.ip_address = req.connection.remoteAddress;
+
+                    blueMixBrokerController.createiMoneyWallet(customer,function(response){
+
+                   
+
+                    try{
+
+                        customer.wallet.id = response.WalletDetails[0].auth_data;
+                        customer.save();
+                         var result = {};
+                        result.message = "iMoney Wallet Created Successfully";
+                        var wallet_response = commonController.composeSuccessResponse(result);
+                        res.send(wallet_response);
+
+                        return;
+
+                    }catch(e){
+
+                        console.log('Exception:' ,e);
+                        var result = {};
+                        result.message = "iMoney Wallet Creation Failed";
+                        var wallet_response = commonController.composeFailureResponse(result);
+                        res.send(wallet_response);
+                        return;
+                    }
+                       
+
+                    },function(error){
+
+                        var result = {};
+                        result.message = "iMoney Wallet Creation Failed";
+                        var wallet_response = commonController.composeFailureResponse(result);
+                        res.send(wallet_response);
+                        return;
+
+                    });
                 }
                 else{
                     var errorResponse = {

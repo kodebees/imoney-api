@@ -4,7 +4,6 @@ var mongoose = require('mongoose');
 var random = require('random-js')();
 var validate = require('mongoose-validator');
 
-
 var Schema = mongoose.Schema;
 
 var mobileNumberValidator = [

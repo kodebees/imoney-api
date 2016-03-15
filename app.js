@@ -14,10 +14,12 @@ var config = require('./configs/config');
 //Creating Controllers
 var VerificationController = require('./controllers/verification');
 var apiController = require('./controllers/icici_controller');
+var blueMixBrokerController = require('./controllers/bluemixcontroller');
 var commonController = require('./controllers/common');
 var aadharController = require('./controllers/aadhar');
 var customerController = require('./controllers/customer');
 
+var cfenv = require('cfenv');
 // Local variables..
 var DBURI;
 var PORT;
@@ -99,6 +101,7 @@ router.use('/customer', commonController.isCustomerExist);
 // Register all our routes with /api
 app.use('/api', router);
 
+var appEnv = cfenv.getAppEnv();
 
 app.get('*', function(req, res, next) {
     var error = new Error();
@@ -182,16 +185,18 @@ router.route('/testauth')
 
 /*Creating Dummy aadhar*/
 router.route('/aadhar').post(aadharController.createAadhar);
+
+router.route('/transfer')
+    .get(blueMixBrokerController.transferCash)
    
 
-var server = app.listen(PORT, function () {
+// start server on the specified port and binding host
+app.listen(appEnv.port, '0.0.0.0', function() {
 
-    var host = server.address().address
-    var port = server.address().port
+    // print a message when the server starts listening
+  console.log("iMoney server starting on " + appEnv.url);
+});
 
-    console.log('imoney  app listening at http://%s:%s', host, port)
-
-})
 
 
 
