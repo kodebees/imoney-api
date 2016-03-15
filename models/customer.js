@@ -67,7 +67,7 @@ var customerSchema = new Schema({
         {transaction_type: {type: String}, //debit,credit
             description: {type: String},
             amount: {type: Number},
-            created_datetime: {type: Date}
+            created_datetime: {type: Date, default: Date.now}
         }
     ],
 
