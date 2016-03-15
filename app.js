@@ -18,6 +18,7 @@ var blueMixBrokerController = require('./controllers/bluemixcontroller');
 var commonController = require('./controllers/common');
 var aadharController = require('./controllers/aadhar');
 var customerController = require('./controllers/customer');
+var transactionController = require('./controllers/transaction');
 
 var cfenv = require('cfenv');
 // Local variables..
@@ -94,10 +95,12 @@ conn.on('disconnected', function () {
 var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
-router.use('/wallet', commonController.isCustomerVerified);
+
 router.use('/customer', commonController.isCustomerExist);
-
-
+router.use('/wallet', commonController.isCustomerVerified);
+router.use('/transfer', commonController.isCustomerVerified);
+router.use('/transfer', commonController.isValidAmount);
+router.use('/transfer', commonController.isValidReceiver);
 // Register all our routes with /api
 app.use('/api', router);
 
@@ -180,6 +183,9 @@ router.route('/wallet/balance')
 //Update the locker amount
 router.route('/wallet/locker_amount')
     .put(customerController.lockAmount);
+//Create Transaction send Money
+router.route('/transfer')
+    .post(transactionController.transfer);
 router.route('/testauth')
     .post(apiController.getAuthToken);
 
