@@ -54,6 +54,29 @@ exports.transfer = function (req, res) {
 
 
 }
+
+
+exports.transactionHistory = function(req,res){
+    var customerId = req.headers.customerid;
+
+    Customer.findById(customerId, function (err, customer) {
+        if (err) {
+            console.log("Error")
+            return res.status(600).send({error: err});
+        }
+        if (customer) {
+            console.log(customer);
+            var result = {};
+            result.message = "Transaction History";
+            result.transactionsArray = customer.transactions;
+
+            var response = {"success": true, "result": result};
+            res.send(response);
+            return;
+        }
+    });
+}
+
 exports.lockAmount = function(req,res){
     var customerId = req.headers.customerid;
    var lock_amount = req.body.amount;
@@ -101,3 +124,4 @@ exports.getBalance = function(req,res){
         }
     });
 }
+
