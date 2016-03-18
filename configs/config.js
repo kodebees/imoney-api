@@ -27,5 +27,14 @@ config.GCM_API_KEY ="AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk";
 config.walletScope = "create";
 config.merchant_id = "mer_123";
 
+/*SMS GATEWAY CONFIGS*/
+var smsRoute = {
+    GET_BALANCE:"getBalance",
+    TRANSFER:"transfer"
+}
+config.SPLIT_CHAR = '~';
+
+config.SMS_ROUTE =smsRoute;
+
 module.exports = config;
 
