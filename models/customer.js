@@ -67,11 +67,15 @@ var customerSchema = new Schema({
         {transaction_type: {type: String}, //debit,credit
             description: {type: String},
             amount: {type: Number},
+            redeem_flag :{type:Boolean, default: 0},
             created_datetime: {type: Date, default: Date.now}
+
         }
     ],
 
     "locker_amount": {type: Number,default:0}
 })
+
+
 
 module.exports = mongoose.model('customer', customerSchema);

@@ -68,7 +68,7 @@ exports.transactionHistory = function(req,res){
             console.log(customer);
             var result = {};
             result.message = "Transaction History";
-            result.transactionsArray = customer.transactions;
+            result.transactions = customer.transactions;
 
             var response = {"success": true, "result": result};
             res.send(response);
