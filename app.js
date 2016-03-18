@@ -19,6 +19,7 @@ var commonController = require('./controllers/common');
 var aadharController = require('./controllers/aadhar');
 var customerController = require('./controllers/customer');
 var transactionController = require('./controllers/transaction');
+var gateWayController = require('./controllers/sms_gateway');
 
 var cfenv = require('cfenv');
 // Local variables..
@@ -194,7 +195,8 @@ router.route('/aadhar').post(aadharController.createAadhar);
 
 router.route('/transfer')
     .get(blueMixBrokerController.transferCash)
-   
+
+router.route('/gateway').post(gateWayController.processRequest);
 
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
