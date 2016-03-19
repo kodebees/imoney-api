@@ -93,6 +93,7 @@ exports.updateDevice = function (req, res) {
     })
 
 }
+
 exports.lockAmount = function(req,res){
     var customerId = req.headers.customerid;
    var lock_amount = req.body.amount;

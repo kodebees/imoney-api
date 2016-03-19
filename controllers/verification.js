@@ -1,5 +1,6 @@
 var mobileVerification = require('../models/mobile_verification');
 var aadharVerification = require('../models/aadhar_verification');
+var Aadhar = require('../models/aadhar');
 var Customer = require('../models/customer');
 var Aadhar = require('../models/aadhar');
 var unirest = require('unirest');
