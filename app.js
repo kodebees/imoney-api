@@ -192,6 +192,9 @@ router.route('/transfer')
 router.route('/testauth')
     .post(apiController.getAuthToken);
 
+//Transaction Histroy
+router.route('/transactions')
+    .get(transactionController.transactionHistory);
 //Redeem the amount from  the wallet convert to mcode
 router.route('/redeem')
     .post(redeemController.redeem);

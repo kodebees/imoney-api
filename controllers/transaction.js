@@ -10,14 +10,14 @@ exports.transfer = function (req, res) {
     var credit_amount =  Math.abs(req.body.amount);
     var DebitTransaction = {
         "transaction_type":"DEBIT",
-        "description":req.body.desc,
+        "description":"Debited",
         "amount":amount,
         "customer":receiverId,
         "name":req.body.receiver_name
     };
     var CreditTransaction = {
         "transaction_type":"CREDIT",
-        "description":req.body.desc,
+        "description":"Credited",
         "amount":credit_amount,
         "customer":customerId,
         "name":""
