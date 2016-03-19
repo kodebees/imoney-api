@@ -64,14 +64,30 @@ var customerSchema = new Schema({
         balance: {type: Number,default:0}
     },
     "transactions": [
-        {transaction_type: {type: String}, //debit,credit
+        {
+            transaction_type: {type: String}, //debit,credit
             description: {type: String},
             amount: {type: Number},
-            created_datetime: {type: Date, default: Date.now}
+            created_datetime: {type: Date, default: Date.now},
+            customer:{type:String},
+            name:{type:String}
         }
     ],
 
     "locker_amount": {type: Number,default:0}
-})
+});
+customerSchema.virtual('full_name')
+    .get(function () {
+       return this.first_name+ " "+this.last_name;
+    });
+customerSchema.virtual('wallet.virtual_balance')
+    .get(function () {
+        console.log("Wallet balance ",this.wallet.balance);
+        console.log("locker balance ",this.locker_amount);
+        var virtual_balance = this.wallet.balance - this.locker_amount;
+        console.log("virutal", virtual_balance);
+        return virtual_balance;
+    });
+
 
 module.exports = mongoose.model('customer', customerSchema);

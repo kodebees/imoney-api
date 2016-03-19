@@ -12,13 +12,15 @@ exports.transfer = function (req, res) {
         "transaction_type":"DEBIT",
         "description":req.body.desc,
         "amount":amount,
-        "customer":receiverId
+        "customer":receiverId,
+        "name":req.body.receiver_name
     };
     var CreditTransaction = {
         "transaction_type":"CREDIT",
         "description":req.body.desc,
         "amount":credit_amount,
-        "customer":customerId
+        "customer":customerId,
+        "name":req.body.customer_name
     };
 
             Customer.findByIdAndUpdate(customerId,  { $push: { 'transactions': DebitTransaction}}, function (err, customer) {
@@ -39,7 +41,8 @@ exports.transfer = function (req, res) {
                             result.message = "Fund Transferred";
                             customer.wallet.balance += amount;
                             receiver.wallet.balance += credit_amount;
-                            result.balance = customer.wallet.balance;
+                            result.balance =  customer.wallet.virtual_balance;
+                            result.locker_amount = customer.locker_amount;
                             customer.save();
                             receiver.save();
                             var response = {"success": true, "result": result};
@@ -77,51 +80,4 @@ exports.transactionHistory = function(req,res){
     });
 }
 
-exports.lockAmount = function(req,res){
-    var customerId = req.headers.customerid;
-   var lock_amount = req.body.amount;
-    Customer.findById(customerId, function (err, customer) {
-        if(customer.wallet.balance > lock_amount){
-            //update the locker amount
-            customer.locker_amount = lock_amount;
-            customer.save()
-            var result = {};
-            result.message = "Wallet Balance";
-            result.amount = customer.wallet.balance;
-            result.locker_amount = customer.locker_amount;
-            var response = {"success": true, "result": result};
-            res.send(response);
-        }
-        else
-        { var errorResponse = {
-            "success": false,
-            "error": {"code": 102, "message": "No sufficent fund to lock"}
-        };
-            res.send(errorResponse);
-            return;
-
-        }
-    });
-}
-
-exports.getBalance = function(req,res){
-    var customerId = req.headers.customerid;
-
-    Customer.findById(customerId, function (err, customer) {
-        if (err) {
-            console.log("Error")
-            return res.status(600).send({error: err});
-        }
-        if (customer) {
-            console.log(customer);
-            var result = {};
-            result.message = "Wallet Balance";
-            result.amount = customer.wallet.balance;
-            result.locker_amount = customer.locker_amount;
-            var response = {"success": true, "result": result};
-            res.send(response);
-            return;
-        }
-    });
-}
 

@@ -103,7 +103,7 @@ exports.lockAmount = function(req,res){
             customer.save()
             var result = {};
             result.message = "Wallet Balance";
-            result.amount = customer.wallet.balance;
+            result.amount = customer.wallet.virtual_balance ;
             result.locker_amount = customer.locker_amount;
             var response = {"success": true, "result": result};
             res.send(response);
@@ -132,7 +132,7 @@ exports.getBalance = function(req,res){
             console.log(customer);
             var result = {};
             result.message = "Wallet Balance";
-            result.amount = customer.wallet.balance;
+            result.amount = customer.wallet.virtual_balance ;
             result.locker_amount = customer.locker_amount;
             var response = {"success": true, "result": result};
             res.send(response);

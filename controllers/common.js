@@ -41,6 +41,7 @@ exports.isCustomerExist = function (req, res, next) {
             return res.status(600).send({error: err});
         }
         if (customer) {
+            req.body.customer_name = customer.full_name;
             next();
         }
         else{
@@ -72,7 +73,11 @@ exports.isCustomerVerified = function (req, res, next) {
         }
         if (customer) {
             if(customer.is_phone_verified)
+            {
+
                 next();
+            }
+
             else{
                 var err = new Error();
                 err.status = 101; //undefined
@@ -97,6 +102,7 @@ exports.isValidAmount = function (req, res, next) {
     //Make the amount absolute incase of negative number
     var amount = Math.abs(req.body.amount);
 
+
     Customer.findById(customerId, function (err, customer) {
         if (err) {
             console.log("Error")
@@ -113,6 +119,12 @@ exports.isValidAmount = function (req, res, next) {
                 var err = new Error();
                 err.status = 101; //undefined
                 err.message ="No sufficient fund to transfer";
+                if(walletBalance > amount)
+                {
+                    err.message ="Use your savings amount";
+                }
+
+
                 next(err);
             }
         }
@@ -138,6 +150,7 @@ exports.isValidReceiver = function (req, res, next) {
         }
         if (receiver) {
            if(receiver.is_phone_verified) {
+               req.body.receiver_name = receiver.full_name;
                next();
            }
             else
