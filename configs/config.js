@@ -23,6 +23,7 @@ config.PRODUCTION_CLOUD_DIRECTORY = '/app-storage';
 config.DEVELOPMENT_BASE_URL = 'http://localhost:3000';
 config.PRODUCTION_BASE_URL = 'http://imoneycheck.mybluemix.net';
 config.GCM_API_KEY ="AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk";
+config.APP_ID = "123";
 
 config.walletScope = "create";
 config.merchant_id = "mer_123";

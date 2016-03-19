@@ -20,6 +20,7 @@ var aadharController = require('./controllers/aadhar');
 var customerController = require('./controllers/customer');
 var transactionController = require('./controllers/transaction');
 var redeemController = require('./controllers/redeem');
+var gateWayController = require('./controllers/sms_gateway');
 
 
 var cfenv = require('cfenv');
@@ -104,6 +105,7 @@ router.use('/transfer', commonController.isCustomerVerified);
 router.use('/transfer', commonController.isValidAmount);
 router.use('/redeem',commonController.isValidAmount);
 router.use('/transfer', commonController.isValidReceiver);
+
 // Register all our routes with /api
 app.use('/api', router);
 
@@ -133,6 +135,7 @@ app.put('*', function(req, res, next) {
 
 app.use(function(err, req, res, next) {
     console.log("Handling error");
+    console.log(err);
     err.success = false;
     switch (err.status)
     {
@@ -188,7 +191,7 @@ router.route('/wallet/locker_amount')
     .put(customerController.lockAmount);
 //Create Transaction send Money
 router.route('/transfer')
-    .post(transactionController.transfer);
+    .post(transactionController.onlineTransfer);
 router.route('/testauth')
     .post(apiController.getAuthToken);
 
@@ -199,6 +202,17 @@ router.route('/transactions')
 router.route('/redeem')
     .post(redeemController.redeem);
 
+//Test GCM push notification
+router.route('/gcm')
+    .post(gateWayController.testGCM);
+
+/*****************************************SMS Gateway request*******************************/
+router.route('/sms/process')
+    .post(gateWayController.processRequest);
+router.route('/sms/transfer')
+    .post(transactionController.smsTransfer)
+
+/*****************************************SMS Gateway request*******************************/
 /*Creating Dummy aadhar*/
 router.route('/aadhar').post(aadharController.createAadhar);
 

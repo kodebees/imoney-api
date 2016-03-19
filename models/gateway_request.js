@@ -3,7 +3,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var REQUEST_INDEX ={
-    TYPE:0
+    TYPE:0,
+    RECEIVER_ID:1,
+    AMOUNT:2
+
 };
 var SPLIT_CHAR = '~';
 var gatewayRequestSchema = new Schema({
@@ -39,7 +42,41 @@ gatewayRequestSchema.virtual('request_type')
 
         }
         return requestInfo;
-    })
+    });
+gatewayRequestSchema.virtual('receiver_id')
+    .get(function () {
+        console.log(this.request_info);
+        var requestInfo = this.request_info.toString();
+        if(requestInfo.indexOf(SPLIT_CHAR) > -1) {
+            var request = requestInfo.split(SPLIT_CHAR)
+            console.log(request);
+
+            if(request.length >= REQUEST_INDEX.RECEIVER_ID)
+            {
+                return  request[REQUEST_INDEX.RECEIVER_ID];
+            }
+
+
+        }
+        return null;
+    });
+gatewayRequestSchema.virtual('amount')
+    .get(function () {
+        console.log(this.request_info);
+        var requestInfo = this.request_info.toString();
+        if(requestInfo.indexOf(SPLIT_CHAR) > -1) {
+            var request = requestInfo.split(SPLIT_CHAR)
+            console.log(request);
+
+            if(request.length >= REQUEST_INDEX.AMOUNT)
+            {
+                return  request[REQUEST_INDEX.AMOUNT];
+            }
+
+
+        }
+        return 0;
+    });
 
 module.exports = mongoose.model('gatewayRequest', gatewayRequestSchema);
 

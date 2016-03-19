@@ -1,6 +1,9 @@
 var Gateway = require('../models/gateway_request');
 var Customer = require('../models/customer');
 var Config = require('../configs/config');
+var transactionController = require('./transaction');
+var commonController = require('./common');
+var gcm = require('node-gcm');
 exports.processRequest = function (req, res) {
     console.log("Sms gateway request");
     new Gateway(req.body).save(function (err, doc) {
@@ -42,22 +45,57 @@ exports.processRequest = function (req, res) {
                     switch (doc.request_type){
                         case Config.SMS_ROUTE.GET_BALANCE:
                             console.log("proccesing your balance");
-                            result.message = "balance"+Config.SPLIT_CHAR+customerInfo.wallet.balance+Config.SPLIT_CHAR+customerInfo.locker_amount;
+                            result.message = "balance"+Config.SPLIT_CHAR+customerInfo.wallet.virtual_balance+Config.SPLIT_CHAR+customerInfo.locker_amount;
                             result.mobile_number = customerInfo.mobile_number;
                             break;
                         case Config.SMS_ROUTE.TRANSFER:
                             console.log("Processing your transfer");
+                            var transactionDetails = {};
+                            //Todo check for valid amount to credit;
+                            transactionDetails.amount = doc.amount;
+                            transactionDetails.sender_id = customerInfo._id;
+                            transactionDetails.receiver_id = doc.receiver_id;
+                            //Todo check is phone number verified or not
+                            commonController.getCustomerInfo(doc.receiver_id,function(receiver){
+                                transactionDetails.name =receiver.full_name;
+                                transactionController.smsTransfer(transactionDetails,function(transaction_result){
+                                    console.log(result);
+                                result.message="transfer"+Config.SPLIT_CHAR+"true"+Config.SPLIT_CHAR+transaction_result.balance+"~"+transaction_result.locker_amount;
+
+                                    doc.response_info = result;
+                                    doc.result = true;
+                                    doc.save();
+                                    var response = {"success": true, "result": result};
+                                    res.send(response)
+                                },function(error){
+
+                                    result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"Failure";
+                                    doc.response_info = result;
+                                    doc.result = true;
+                                    doc.save();
+                                    var response = {"success": true, "result": result};
+                                    res.send(response)
+                                })
+
+                            },function(error){
+                                result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"No receiver found";
+                            })
+
+
+
                             break;
                         default :
                             console.log("NO Request type found");
+                            result.message= "NO Request type found";
+                            doc.response_info = result;
+                            doc.result = true;
+                            doc.save();
+                            var response = {"success": true, "result": result};
+                            res.send(response);
                             break;
 
                     }
-                    doc.response_info = result;
-                    doc.result = true;
-                    doc.save();
-                    var response = {"success": true, "result": result};
-                    res.send(response)
+
                 }
                 else {
                     var errorResponse = {
@@ -73,6 +111,31 @@ exports.processRequest = function (req, res) {
             });
         }
     });
+}
+exports.testGCM = function (req, res) {
+
+    var result = {"success":true,"message":"test gcm"}
+    var message = new gcm.Message({
+        collapseKey: 'imoney',
+        delayWhileIdle: true,
+        timeToLive: 3,
+        dryRun: false,
+        data: result
+    });
+
+
+    var gcmId = [];
+    gcmId.push(req.body.gcm_id);
+
+    var sender = new gcm.Sender(Config.GCM_API_KEY);
+    sender.send(message, gcmId, 4, function (err, result) {
+        console.log("notified user " + req.body.gcm_id);
+        if(result)
+        res.send(result);
+        else
+        res.send(err);
+    });
+
 }
 
 
