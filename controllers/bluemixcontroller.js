@@ -20,7 +20,7 @@ var appEnv = cfenv.getAppEnv();
 	This function creates a new wallet in ICICI Environment (Equals creating a new user in iMoney,caller of this function implements new user logic)
 	
 */
-exports.createiMoneyWallet = function (customer,on_success,on_error) { 
+exports.createiMoneyWallet = function (customer,on_success,on_error) {
 
  var walletCreationAPIURL = "http://alphaiciapi2.mybluemix.net/rest/Wallet/createWallet/"
  							 + config.merchant_id	+"/"
@@ -35,10 +35,10 @@ exports.createiMoneyWallet = function (customer,on_success,on_error) {
  							 + customer.deviceInfo.platform +"/"
  							 + customer.deviceInfo.uuid +"/"
  							 + customer.deviceInfo.imei +"/"
-/* 							 + "sureshrgopal@gmail.com" + "/"
- 							 + "2671af561974"*/
- 							 + process.env.client_id +"/"
- 							 + process.env.auth_token
+ 							 + "sureshrgopal@gmail.com" + "/"
+ 							 + "2671af561974"
+	/*  + process.env.client_id +"/"
+ 							 + process.env.auth_token*/
 
  							 console.log(walletCreationAPIURL)
 

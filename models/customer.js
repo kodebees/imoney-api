@@ -69,8 +69,6 @@ var customerSchema = new Schema({
             description: {type: String},
             amount: {type: Number},
             redeem_flag :{type:Boolean, default: 0},
-            created_datetime: {type: Date, default: Date.now}
-
             created_datetime: {type: Date, default: Date.now},
             customer:{type:String},
             name:{type:String}
@@ -78,10 +76,9 @@ var customerSchema = new Schema({
     ],
 
     "locker_amount": {type: Number,default:0}
-})
-
-
 });
+
+
 customerSchema.virtual('full_name')
     .get(function () {
        return this.first_name+ " "+this.last_name;
