@@ -20,9 +20,10 @@ exports.transfer = function (req, res) {
         "description":req.body.desc,
         "amount":credit_amount,
         "customer":customerId,
-        "name":req.body.customer_name
+        "name":""
     };
 
+        //Debit the amount fom sender
             Customer.findByIdAndUpdate(customerId,  { $push: { 'transactions': DebitTransaction}}, function (err, customer) {
                 if (err) {
                     console.log("Error")
@@ -30,13 +31,16 @@ exports.transfer = function (req, res) {
                 }
                 if (customer) {
                     //Transaction Debited
+                    //ToDO icici brokerege should be done here
+                    //Credit the amount to Receiver
+                    CreditTransaction.name=customer.full_name;
                     Customer.findByIdAndUpdate(receiverId,  { $push: { 'transactions': CreditTransaction}}, function (err, receiver) {
                         if (err) {
                             console.log("Error")
                             return res.status(600).send({error: err});
                         }
                         if (receiver) {
-                            console.log(receiver);
+
                             var result = {};
                             result.message = "Fund Transferred";
                             customer.wallet.balance += amount;
@@ -46,6 +50,7 @@ exports.transfer = function (req, res) {
                             customer.save();
                             receiver.save();
                             var response = {"success": true, "result": result};
+                            console.log(response);
                             res.send(response);
                             return;
                         }
@@ -71,6 +76,7 @@ exports.transactionHistory = function(req,res){
             console.log(customer);
             var result = {};
             result.message = "Transaction History";
+
             result.transactions = customer.transactions;
 
             var response = {"success": true, "result": result};

@@ -19,6 +19,7 @@ var commonController = require('./controllers/common');
 var aadharController = require('./controllers/aadhar');
 var customerController = require('./controllers/customer');
 var transactionController = require('./controllers/transaction');
+var redeemController = require('./controllers/redeem');
 
 
 var cfenv = require('cfenv');
@@ -101,6 +102,7 @@ router.use('/customer', commonController.isCustomerExist);
 router.use('/wallet', commonController.isCustomerVerified);
 router.use('/transfer', commonController.isCustomerVerified);
 router.use('/transfer', commonController.isValidAmount);
+router.use('/redeem',commonController.isValidAmount);
 router.use('/transfer', commonController.isValidReceiver);
 // Register all our routes with /api
 app.use('/api', router);
@@ -190,13 +192,20 @@ router.route('/transfer')
 router.route('/testauth')
     .post(apiController.getAuthToken);
 
+//Redeem the amount from  the wallet convert to mcode
+router.route('/redeem')
+    .post(redeemController.redeem);
+
 /*Creating Dummy aadhar*/
 router.route('/aadhar').post(aadharController.createAadhar);
 
+/*
 router.route('/transfer')
+
     .get(blueMixBrokerController.transferCash)
    
 
+*/
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
 

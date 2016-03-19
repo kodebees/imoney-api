@@ -54,7 +54,9 @@ exports.updateDevice = function (req, res) {
                         console.log('Exception:' ,e);
                         var result = {};
                         result.message = "iMoney Wallet Creation Failed";
-                        var wallet_response = commonController.composeFailureResponse(result);
+                        //ToDo once icici give stable response un commnet the below line
+                      //  var wallet_response = commonController.composeFailureResponse(result);
+                        var wallet_response = commonController.composeSuccessResponse(result);
                         res.send(wallet_response);
                         return;
                     }

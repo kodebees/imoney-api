@@ -47,12 +47,12 @@ var customerSchema = new Schema({
     "gender": {},
     "email": {type: String, required: true, unique: true},
     "deviceInfo": {
-        model: {type: String},
-        platform: {type: String},
-        uuid: {type: String},
-        version: {type: String},
-        push_token: {type: String},
-        imei: {type: String}
+        model: {type: String,default:"Model"},
+        platform: {type: String,default:"Platform"},
+        uuid: {type: String,default:"uuid"},
+        version: {type: String,default:"version"},
+        push_token: {type: String,default:"pushtoken"},
+        imei: {type: String,default:"imei"}
     },
     "ip_address" : {type:String},
     "application_version": {type: String},
@@ -81,6 +81,7 @@ var customerSchema = new Schema({
 
 customerSchema.virtual('full_name')
     .get(function () {
+        console.log("Full Name "+this.first_name+ " "+this.last_name);
        return this.first_name+ " "+this.last_name;
     });
 customerSchema.virtual('wallet.virtual_balance')
