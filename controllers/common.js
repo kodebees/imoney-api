@@ -3,6 +3,7 @@ var Config = require('../configs/config');
 
 var isHeaderExist = function (req,headerName, success_callback, error_callback) {
     console.log("checking header " + headerName);
+    console.log(req.headers[headerName]);
     if (req.headers[headerName] == undefined) {
         var err = new Error();
         err.status = 101; //undefined

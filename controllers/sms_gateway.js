@@ -58,33 +58,64 @@ exports.processRequest = function (req, res) {
                             var transactionDetails = {};
                             //Todo check for valid amount to credit;
                             transactionDetails.amount = doc.amount;
-                            transactionDetails.sender_id = customerInfo._id;
-                            transactionDetails.receiver_id = doc.receiver_id;
-                            //Todo check is phone number verified or not
-                            commonController.getCustomerInfo(doc.receiver_id,function(receiver){
-                                transactionDetails.name =receiver.full_name;
-                                transactionController.smsTransfer(transactionDetails,function(transaction_result){
-                                    console.log(result);
-                                result.message="transfer"+Config.SPLIT_CHAR+"true"+Config.SPLIT_CHAR+transaction_result.balance+"~"+transaction_result.locker_amount;
+                            var walletBalance = customerInfo.wallet.balance;
+                            var lockerAmount = customerInfo.locker_amount;
+                            var liquidBalance = walletBalance - lockerAmount;
 
-                                    doc.response_info = result;
-                                    doc.result = true;
-                                    doc.save();
-                                    var response = {"success": true, "result": result};
-                                    res.send(response)
+                            if (liquidBalance >  doc.amount)
+                            {
+                                transactionDetails.sender_id = customerInfo._id;
+                                transactionDetails.receiver_id = doc.receiver_id;
+                                //Todo check is phone number verified or not
+                                commonController.getCustomerInfo(doc.receiver_id,function(receiver){
+                                    transactionDetails.name =receiver.full_name;
+                                    transactionController.smsTransfer(transactionDetails,function(transaction_result){
+                                        console.log(result);
+                                        result.message="transfer"+Config.SPLIT_CHAR+"true"+Config.SPLIT_CHAR+transaction_result.balance+"~"+transaction_result.locker_amount;
+
+                                        doc.response_info = result;
+                                        doc.result = true;
+                                        doc.save();
+                                        var response = {"success": true, "result": result};
+                                        res.send(response)
+                                    },function(error){
+
+                                        result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"Failure";
+                                        doc.response_info = result;
+                                        doc.result = true;
+                                        doc.save();
+                                        var response = {"success": true, "result": result};
+                                        res.send(response)
+                                    })
+
                                 },function(error){
+                                    result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"No receiver found";
 
-                                    result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"Failure";
                                     doc.response_info = result;
-                                    doc.result = true;
+                                    doc.result = false;
                                     doc.save();
                                     var response = {"success": true, "result": result};
                                     res.send(response)
                                 })
+                            }
+                            else {
 
-                            },function(error){
-                                result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"No receiver found";
-                            })
+                                result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"No sufficient fund to transfer";
+                                if (walletBalance > doc.amount) {
+                                    result.message="transfer"+Config.SPLIT_CHAR+"false"+Config.SPLIT_CHAR+"Use your savings amount";
+
+                                }
+
+                                doc.response_info = result;
+                                doc.result = true;
+                                doc.save();
+                                var response = {"success": true, "result": result};
+                                res.send(response)
+
+
+
+                            }
+
 
 
 
@@ -93,9 +124,9 @@ exports.processRequest = function (req, res) {
                             console.log("NO Request type found");
                             result.message= "NO Request type found";
                             doc.response_info = result;
-                            doc.result = true;
+                            doc.result = false;
                             doc.save();
-                            var response = {"success": true, "result": result};
+                            var response = {"success": false, "result": result};
                             res.send(response);
                             break;
 
