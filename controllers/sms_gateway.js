@@ -72,7 +72,7 @@ exports.processRequest = function (req, res) {
                                     transactionController.smsTransfer(transactionDetails,function(transaction_result){
                                         console.log(result);
                                         result.message="transfer"+Config.SPLIT_CHAR+"true"+Config.SPLIT_CHAR+transaction_result.balance+"~"+transaction_result.locker_amount;
-
+                                        result.mobile_number = customerInfo.mobile_number;
                                         doc.response_info = result;
                                         doc.result = true;
                                         doc.save();
