@@ -47,6 +47,11 @@ exports.processRequest = function (req, res) {
                             console.log("proccesing your balance");
                             result.message = "balance"+Config.SPLIT_CHAR+customerInfo.wallet.virtual_balance+Config.SPLIT_CHAR+customerInfo.locker_amount;
                             result.mobile_number = customerInfo.mobile_number;
+                            doc.response_info = result;
+                            doc.result = true;
+                            doc.save();
+                            var response = {"success": true, "result": result};
+                            res.send(response);
                             break;
                         case Config.SMS_ROUTE.TRANSFER:
                             console.log("Processing your transfer");
