@@ -1,13 +1,8 @@
-/**
-/**
- * Created by Dhamayanthi on 05/01/15.
- */
 
 // Load required packages
 var mongoose = require('mongoose');
 var random = require('random-js')();
 var validate = require('mongoose-validator');
-
 
 var Schema = mongoose.Schema;
 
@@ -41,7 +36,6 @@ mobileVerificationSchema.pre('save', function(next) {
     console.log("Genreated code is "+genCode);
     this.verification_code = genCode;
     next();
-      
 
 
 });

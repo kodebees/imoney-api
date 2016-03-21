@@ -14,8 +14,16 @@ var config = require('./configs/config');
 //Creating Controllers
 var VerificationController = require('./controllers/verification');
 var apiController = require('./controllers/icici_controller');
-var commonController = require('./controllers/common')
+var blueMixBrokerController = require('./controllers/bluemixcontroller');
+var commonController = require('./controllers/common');
+var aadharController = require('./controllers/aadhar');
+var customerController = require('./controllers/customer');
+var transactionController = require('./controllers/transaction');
+var redeemController = require('./controllers/redeem');
+var gateWayController = require('./controllers/sms_gateway');
 
+
+var cfenv = require('cfenv');
 // Local variables..
 var DBURI;
 var PORT;
@@ -91,12 +99,17 @@ var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
 
-
-
+router.use('/customer', commonController.isCustomerExist);
+router.use('/wallet', commonController.isCustomerVerified);
+router.use('/transfer', commonController.isCustomerVerified);
+router.use('/transfer', commonController.isValidAmount);
+router.use('/redeem',commonController.isValidAmount);
+router.use('/transfer', commonController.isValidReceiver);
 
 // Register all our routes with /api
 app.use('/api', router);
 
+var appEnv = cfenv.getAppEnv();
 
 app.get('*', function(req, res, next) {
     var error = new Error();
@@ -122,24 +135,28 @@ app.put('*', function(req, res, next) {
 
 app.use(function(err, req, res, next) {
     console.log("Handling error");
+    console.log(err);
+    err.success = false;
     switch (err.status)
     {
+
         case 404:
-            res.send(err.message || '** no imoney here **');
+           // res.send(err || '** no imoney here **');
+            res.sendfile('./admin/index.html');
             break;
         case 101://undefined
-            res.send(err.message || "invalid parameter");
-            console.log(err.status);
+            res.send(err || "invalid parameter");
+            console.log(err);
             break;
         case 102:
-            res.send(err.message || "invalid appid");
+            res.send(err || "invalid appid");
             break;
         case 103:
-            res.send(err.message || "invalid parameter");
-            console.log(err.status);
+            res.send(err || "invalid parameter");
+            console.log(err);
             break;
         case 104:
-            res.send(err.message || "invalid device ");
+            res.send(err || "invalid device ");
             break;
         case 105:
             var error ={};
@@ -158,20 +175,62 @@ app.use(function(err, req, res, next) {
 // 103 Invalid parameters
 // 104 duplicate mobile number
 // 105 verification code and mobile number does not match
-router.route('/sendCode')
+router.route('/verify/mobile')
     .post(VerificationController.verifyMobileNumber);
+router.route('/verify/aadhar')
+    .post(VerificationController.verifyAadharNumber);
+
+//verify mobile verification code and update device
+router.route('/customer/device')
+    .post(customerController.updateDevice);
+//getWalletBalance and locker_amount
+router.route('/wallet/balance')
+    .get(customerController.getBalance);
+
+//Update the locker amount
+router.route('/wallet/locker_amount')
+    .put(customerController.lockAmount);
+//Create Transaction send Money
+router.route('/transfer')
+    .post(transactionController.onlineTransfer);
 router.route('/testauth')
     .post(apiController.getAuthToken);
+
+//Transaction Histroy
+router.route('/transactions')
+    .get(transactionController.transactionHistory);
+//Redeem the amount from  the wallet convert to mcode
+router.route('/redeem')
+    .post(redeemController.redeem);
+
+//Test GCM push notification
+router.route('/gcm')
+    .post(gateWayController.testGCM);
+
+/*****************************************SMS Gateway request*******************************/
+router.route('/sms/process')
+    .post(gateWayController.processRequest);
+router.route('/sms/transfer')
+    .post(transactionController.smsTransfer)
+
+/*****************************************SMS Gateway request*******************************/
+/*Creating Dummy aadhar*/
+router.route('/aadhar').post(aadharController.createAadhar);
+
+/*
+router.route('/transfer')
+
+    .get(blueMixBrokerController.transferCash)
    
 
-var server = app.listen(PORT, function () {
+*/
+// start server on the specified port and binding host
+app.listen(appEnv.port, '0.0.0.0', function() {
 
-    var host = server.address().address
-    var port = server.address().port
+    // print a message when the server starts listening
+  console.log("iMoney server starting on " + appEnv.url);
+});
 
-    console.log('imoney  app listening at http://%s:%s', host, port)
-
-})
 
 
 
