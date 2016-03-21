@@ -141,7 +141,8 @@ app.use(function(err, req, res, next) {
     {
 
         case 404:
-            res.send(err || '** no imoney here **');
+           // res.send(err || '** no imoney here **');
+            res.sendfile('./admin/index.html');
             break;
         case 101://undefined
             res.send(err || "invalid parameter");

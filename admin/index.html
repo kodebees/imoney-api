@@ -1,0 +1,120 @@
+<!-- index.html -->
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="imoneyadmin">
+<head>
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+    <title>Imoney Admin</title>
+
+    <!-- SCROLLS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <style>
+        html                    { overflow-y:scroll; }
+        body                    { padding-top:50px; }
+        #todo-list              { margin-bottom:30px; }
+    </style>
+
+    <!-- SPELLS -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+    <script >var scotchTodo = angular.module('imoneyadmin', []);
+
+    function mainController($scope, $http) {
+        $scope.formData = {};
+        $scope.customer= {};
+
+
+        // when submitting the add form, send the text to the node API
+
+        $scope.loadCustomer = function() {
+            console.log( $scope.formData);
+
+
+            var data = JSON.stringify($scope.formData);
+
+            console.log(data);
+            $http.post('/api/verify/aadhar',data,
+                    {headers: { 'Content-Type':'application/json','appid':'123'}
+
+                    })
+                    .success(function(data) {
+                        $scope.formData = {}; // clear the form so our user is ready to enter another
+
+                        console.log(data);
+                        $scope.customer = data.result.customerInfo;
+                        console.log( $scope.customer);
+
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+        };
+
+        // delete a todo after checking it
+        $scope.deleteTodo = function(id) {
+            $http.delete('/api/todos/' + id)
+                    .success(function(data) {
+                        $scope.todos = data;
+                        console.log(data);
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+        };
+
+    }</script>
+
+</head>
+<!-- SET THE CONTROLLER AND GET ALL TODOS -->
+<body ng-controller="mainController">
+<div class="container">
+
+    <!-- HEADER AND TODO COUNT -->
+    <div class="jumbotron text-center">
+        <h1>Imoney Admin</h1>
+    </div>
+
+
+
+    <!-- FORM TO CREATE TODOS -->
+    <div id="todo-form" class="row">
+        <div class="col-sm-8 col-sm-offset-2 text-center" >
+            <form>
+                <div class="form-group">
+
+                    <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                    <input type="text" class="form-control input-lg text-center" placeholder="Adhar Number" ng-model="formData.aadhar_number"><br>
+
+
+                </div>
+
+                <!-- createToDo() WILL CREATE NEW TODOS -->
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCustomer()">Load Customer</button>
+            </form>
+        </div>
+        <div class="col-sm-8 col-sm-offset-2 text-center" >
+            <form>
+                <div class="form-group">
+
+                    <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                    Customer Name : {{customer.first_name}}<br>
+                    Waller Balance :{{customer.wallet.balance}}<br>
+                    <input type="text" class="form-control input-lg text-center" placeholder="Cash" ng-model="formData.amount"><br>
+
+
+                </div>
+
+                <!-- createToDo() WILL CREATE NEW TODOS -->
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCustomer()">Load Cash</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
