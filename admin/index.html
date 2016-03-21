@@ -26,18 +26,17 @@
     function mainController($scope, $http) {
         $scope.formData = {};
         $scope.customer= {};
-
+        $scope.showme=true;
+        $scope.cutomerId ={};
+        $scope.customerName={};
 
         // when submitting the add form, send the text to the node API
-
         $scope.loadCustomer = function() {
+           $scope.showme=false;
             console.log( $scope.formData);
-
-
             var data = JSON.stringify($scope.formData);
-
             console.log(data);
-            $http.post('/api/verify/aadhar',data,
+            $http.post('/api/aadharDetails',data,
                     {headers: { 'Content-Type':'application/json','appid':'123'}
 
                     })
@@ -46,6 +45,8 @@
 
                         console.log(data);
                         $scope.customer = data.result.customerInfo;
+                        $scope.customerId=data.result.customerInfo._id;
+                        $scope.customerName=data.result.customerInfo.first_name + " " +data.result.customerInfo.last_name;
                         console.log( $scope.customer);
 
                     })
@@ -54,8 +55,37 @@
                     });
         };
 
+
+        $scope.loadCash = function() {
+           // $scope.showme=true;
+            console.log( $scope.formData1);
+            var data = $scope.formData1;
+            console.log(data);
+
+            var params={};
+             params.amount = data.amount;
+             params.customerid = $scope.customerId;
+
+            $http.post('/api/creditImoney',params,
+                    {headers: { 'Content-Type':'application/json','appid':'123'}
+
+                    })
+                    .success(function(data) {
+                        $scope.formData1 = {}; // clear the form so our user is ready to enter another
+                        console.log(data);
+                        $scope.balanceAfterCredit = data.result.balance;
+                        console.log( $scope.balanceAfterCredit);
+                        alert("Rs." + params.amount + " successfully creaded to" + "" +  $scope.customerName );
+                        $scope.showme=true;
+
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+        };
+
         // delete a todo after checking it
-        $scope.deleteTodo = function(id) {
+       /* $scope.deleteTodo = function(id) {
             $http.delete('/api/todos/' + id)
                     .success(function(data) {
                         $scope.todos = data;
@@ -64,9 +94,11 @@
                     .error(function(data) {
                         console.log('Error: ' + data);
                     });
-        };
+        };*/
 
-    }</script>
+    }
+
+    </script>
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
@@ -81,38 +113,51 @@
 
 
     <!-- FORM TO CREATE TODOS -->
-    <div id="todo-form" class="row">
+    <div id="aadhar-number-form" class="row" ng-show="showme">
+
         <div class="col-sm-8 col-sm-offset-2 text-center" >
             <form>
                 <div class="form-group">
-
                     <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
                     <input type="text" class="form-control input-lg text-center" placeholder="Adhar Number" ng-model="formData.aadhar_number"><br>
-
-
                 </div>
-
                 <!-- createToDo() WILL CREATE NEW TODOS -->
                 <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCustomer()">Load Customer</button>
             </form>
         </div>
+
+    </div>
+
+    <div id="load-cash-form" class="row" ng-hide="showme">
+
         <div class="col-sm-8 col-sm-offset-2 text-center" >
             <form>
                 <div class="form-group">
 
+                    <ul class="list-group">
                     <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                    Customer Name : {{customer.first_name}}<br>
-                    Waller Balance :{{customer.wallet.balance}}<br>
-                    <input type="text" class="form-control input-lg text-center" placeholder="Cash" ng-model="formData.amount"><br>
+
+                    <li class="list-group-item active">Customer Information</li>
+                    <li class="list-group-item">Customer Name : {{customer.first_name + ' ' + customer.last_name}}</li>
+                    <li class="list-group-item">Mobile Number : {{customer.mobile_number}}</li>
+                    <li class="list-group-item">Wallet Balance :{{customer.wallet.balance}}</li>
+                    <li class="list-group-item">Savings Balance :{{customer.locker_amount}}</li>
+
+                    </ul>
+                    <input type="number" min="100" max="5000" class="form-control input-lg text-center" placeholder="Cash" ng-model="formData1.amount"><br>
 
 
                 </div>
 
                 <!-- createToDo() WILL CREATE NEW TODOS -->
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCustomer()">Load Cash</button>
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCash()">Load Cash</button>
             </form>
-        </div>
+
     </div>
+
+    </div>
+
+
 
 </div>
 
