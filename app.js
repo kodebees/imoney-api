@@ -7,9 +7,9 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+
+
 var config = require('./configs/config');
-
-
 
 //Creating Controllers
 var VerificationController = require('./controllers/verification');
@@ -23,6 +23,10 @@ var redeemController = require('./controllers/redeem');
 var gateWayController = require('./controllers/sms_gateway');
 
 
+var webInterfaceController = require('./controllers/web_interface');
+
+
+
 var cfenv = require('cfenv');
 // Local variables..
 var DBURI;
@@ -33,9 +37,17 @@ var PORT;
 // Create express application
 var app = express()
 
+//app.set('superSecret', config.secret); // secret variable
+
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
+
 app.use(bodyParser.urlencoded({ extended: true })); // to support URL-encoded bodies
+
+
+
+
+
 
 
 //Handle development and production environments and set ports and db connections accordingly..
@@ -98,6 +110,28 @@ conn.on('disconnected', function () {
 var router = express.Router();
 
 router.use('/', commonController.checkApiKey);
+// Add headers
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,appid');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
+
+
 
 router.use('/customer', commonController.isCustomerExist);
 router.use('/wallet', commonController.isCustomerVerified);
@@ -106,8 +140,12 @@ router.use('/transfer', commonController.isValidAmount);
 router.use('/redeem',commonController.isValidAmount);
 router.use('/transfer', commonController.isValidReceiver);
 
+
+
 // Register all our routes with /api
 app.use('/api', router);
+
+
 
 var appEnv = cfenv.getAppEnv();
 
@@ -210,8 +248,7 @@ router.route('/gcm')
 /*****************************************SMS Gateway request*******************************/
 router.route('/sms/process')
     .post(gateWayController.processRequest);
-router.route('/sms/transfer')
-    .post(transactionController.smsTransfer)
+
 
 /*****************************************SMS Gateway request*******************************/
 /*Creating Dummy aadhar*/
@@ -221,9 +258,19 @@ router.route('/aadhar').post(aadharController.createAadhar);
 router.route('/transfer')
 
     .get(blueMixBrokerController.transferCash)
-   
 
 */
+router.route('/gateway').post(gateWayController.processRequest);
+
+ router.route('/aadharDetails')
+    .post(webInterfaceController.adharDetails);
+
+router.route('/creditImoney')
+    .post(webInterfaceController.creditImoney);
+
+
+
+
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
 
