@@ -1,4 +1,5 @@
 var Customer = require('../models/customer');
+var gcm = require('node-gcm');
 var DebitTransaction = {
     "transaction_type": "DEBIT",
     "description": "Debited",
@@ -47,6 +48,8 @@ var transferAmount = function (details, success_callback, error_callback) {
                 if (receiver) {
 
                     var result = {};
+                    var gcmId = [];
+                    gcmId.push(receiver.deviceInfo.push_token);
                     result.message = "Fund Transferred";
                     customer.wallet.balance += debit_amount;
                     receiver.wallet.balance += credit_amount;
@@ -56,7 +59,29 @@ var transferAmount = function (details, success_callback, error_callback) {
                     customer.save();
                     //Updating the Wallet balance for receiver
                     receiver.save();
-                    var response = {"success": true, "result": result};
+                    var receiverBalanceData={};
+                    receiverBalanceData.balance = receiver.wallet.balance;
+                    receiverBalanceData.locker_amount=receiver.locker_amount;
+                    receiverBalanceData.message="Your account is created with Rs."+credit_amount;
+
+
+                   // var response = {"success": true, "result": result};
+                        var message = new gcm.Message({
+                        collapseKey: 'demo',
+                        delayWhileIdle: true,
+                        timeToLive: 3,
+                        dryRun:false,
+                        data: receiverBalanceData
+                    });
+                    var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
+                    sender.send(message, gcmId, 4, function (err, result) {
+                        console.log(receiver);
+                        console.log("notified user "+customer.mobile_number);
+                        console.log(receiver.deviceInfo.push_token);
+                        console.log(result);
+                    });
+
+
                     console.log(result);
                     success_callback(result);
                     return 0;
