@@ -9,17 +9,18 @@ exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
     new aadharVerification(req.body).save(function (err, doc) {
         if (err) {
-            var errMessage = [];
+            //var errMessage;
 
             // go through all the errors...
             for (var errName in err.errors) {
                 var message = err.errors[errName].message
-                var errors = {};
-                errors[errName] = message
-                errMessage.push(errors);
+               // var errors = {};
+               // errors[errName] = message
+                console.log(message);
+                //errMessage+=message;
             }
             console.log(err);
-            var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
+            var errorResponse = {"success": false, "error": {"code": 102, "message": message}};//validation error
             res.send(errorResponse);
             return;
         }
@@ -85,17 +86,18 @@ exports.verifyAadharNumber = function (req, res) {
                                 function(err,newCustomer)
                                 {
                                     if (err) {
-                                        var errMessage = [];
+                                       // var errMessage = [];
 
                                         // go through all the errors...
                                         for (var errName in err.errors) {
                                             var message = err.errors[errName].message
-                                            var errors = {};
-                                            errors[errName] = message
-                                            errMessage.push(errors);
+                                            // var errors = {};
+                                            // errors[errName] = message
+                                            console.log(message);
+                                            //errMessage+=message;
                                         }
                                         console.log(err);
-                                        var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
+                                        var errorResponse = {"success": false, "error": {"code": 102, "message": message}};//validation error
                                         res.send(errorResponse);
                                         return;
                                     }
@@ -133,21 +135,21 @@ exports.verifyAadharNumber = function (req, res) {
 exports.verifyMobileNumber = function (req, res) {
 //
 
-
     new mobileVerification(req.body).save(function (err, doc) {
 
         if (err) {
-            var errMessage = [];
+            var errMessage;
 
             // go through all the errors...
             for (var errName in err.errors) {
                 var message = err.errors[errName].message
-                var errors = {};
-                errors[errName] = message
-                errMessage.push(errors);
+                // var errors = {};
+                // errors[errName] = message
+                console.log(message);
+                //errMessage+=message;
             }
             console.log(err);
-            var errorResponse = {"success": false, "error": {"code": 102, "message": errMessage}};//validation error
+            var errorResponse = {"success": false, "error": {"code": 102, "message": message}};//validation error
             res.send(errorResponse);
             return;
         }
