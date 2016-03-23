@@ -4,6 +4,7 @@ var Aadhar = require('../models/aadhar');
 var Customer = require('../models/customer');
 var Aadhar = require('../models/aadhar');
 var unirest = require('unirest');
+var gcm = require('node-gcm');
 
 exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
@@ -133,7 +134,8 @@ exports.verifyAadharNumber = function (req, res) {
     });
 }
 exports.verifyMobileNumber = function (req, res) {
-//
+
+   var  mobile_number = req.body.mobile_number;
 
     new mobileVerification(req.body).save(function (err, doc) {
 
@@ -162,13 +164,33 @@ exports.verifyMobileNumber = function (req, res) {
         }
         else {
             var result = {};
+            var gcmId = [];
+           // var push_token = "APA91bFgArM4TQJnrPFbGP3mofo-6AffFtMBsLkQWHhC7oV983dxfrU5jeTTz6Zi6RtIpKdlOVuI0ervu3dXj4XAA5GipWRoDc6PE0B0XBi8c0IeLlKUiUbQB7ThQfkHeF050rFcq2yB";
+            gcmId.push("APA91bEAa3BvECw3VJGUK3Xinx0FynrOTMzhmMcsGjWC0UOsNUfc8dAbDwGrBslwSP6J9hefoN0RoFiR78tIi1Dv7HDQr09N9BEE_rf6XxUxkUBDPUXWgSgIAx_8uApMtUsSJzY__Nxm");
             result.verification_id = doc._id;
-            result.message = "Message sent successfully"
+            result.message = "verification"
             //Todo comment bellow line on production
             result.code = doc.verification_code;
-            var template = "Welcome to IMoney, your verification code is " + result.code;
+            result.mobile_number = mobile_number;
+            //var template = "Welcome to IMoney, your verification code is " + result.code;
+            var message = new gcm.Message({
+                collapseKey: 'demo',
+                delayWhileIdle: true,
+                timeToLive: 3,
+                dryRun:false,
+                data: result
+            });
+            var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
+            sender.send(message, gcmId, 4, function (err, result) {
+                console.log(result);
+
+
+                console.log(result);
+            });
+
+
             // GET a resource
-            var SMSApiUrl = "http://api.mVaayoo.com/mvaayooapi/MessageCompose";
+           // var SMSApiUrl = "http://api.mVaayoo.com/mvaayooapi/MessageCompose";
             /* unirest.get(SMSApiUrl)
              .query({'user': 'veuontechnologies@gmail.com:wordpass321'})
              .query({'senderID': 'VEUONT'})
