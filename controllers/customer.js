@@ -51,42 +51,27 @@ exports.updateDevice = function (req, res) {
 
                     blueMixBrokerController.createiMoneyWallet(customer,function(response){
 
-                   try{
+
+
+                    try{
 
                         customer.wallet.id = response.WalletDetails[0].auth_data;
-                       console.log(customer.wallet.id)
                         customer.save();
-                       var wallet_response = {};
-
-                       wallet_response.sucess = true;
-
-                       wallet_response.result = {"message": "mobile number verified / iMoney Wallet Created Successfully","walletId": customer.wallet.id};
-                       //var result = {};
-                       // result.message = "mobile number verified / iMoney Wallet Created Successfully";
-
-                       // var wallet_response = commonController.composeSuccessResponse(result);
+                         var result = {};
+                        result.message = "iMoney Wallet Created Successfully";
+                        var wallet_response = commonController.composeSuccessResponse(result);
                         res.send(wallet_response);
 
                         return;
 
                     }catch(e){
 
-                        console.log('Exception:',e);
-
-                       // var result = {};
-                       // result.message = "iMoney Wallet Creation Failed";
-
-                       var wallet_response = {};
-
-                       wallet_response.sucess = true;
-
-                       wallet_response.result = {"message": "mobile number verified /iMoney Wallet Creation Failed"};
-
-
-
+                        console.log('Exception:' ,e);
+                        var result = {};
+                        result.message = "iMoney Wallet Creation Failed";
                         //ToDo once icici give stable response un commnet the below line
                       //  var wallet_response = commonController.composeFailureResponse(result);
-                       // var wallet_response = commonController.composeSuccessResponse(result);
+                        var wallet_response = commonController.composeSuccessResponse(result);
                         res.send(wallet_response);
                         return;
                     }
@@ -94,17 +79,9 @@ exports.updateDevice = function (req, res) {
 
                     },function(error){
 
-                       // var result = {};
-                        //result.message = "iMoney Wallet Creation Failed";
-                       // var wallet_response = commonController.composeFailureResponse(result);
-
-                        var wallet_response = {};
-
-                        wallet_response.sucess = true;
-
-                        wallet_response.result = {"message": "mobile number verified /iMoney Wallet Creation Failed"};
-
-
+                        var result = {};
+                        result.message = "iMoney Wallet Creation Failed";
+                        var wallet_response = commonController.composeFailureResponse(result);
                         res.send(wallet_response);
                         return;
 
@@ -144,9 +121,8 @@ exports.lockAmount = function(req,res){
             customer.save()
             var result = {};
             result.message = "Wallet Balance";
-            result.walletBalance =customer.wallet.balance;
-            result.liquidBalance = customer.wallet.virtual_balance ;
-            result.lockedBalance = customer.locker_amount;
+            result.amount = customer.wallet.virtual_balance ;
+            result.locker_amount = customer.locker_amount;
             var response = {"success": true, "result": result};
             res.send(response);
         }
@@ -172,13 +148,10 @@ exports.getBalance = function(req,res){
         }
         if (customer) {
             console.log(customer);
-
             var result = {};
             result.message = "Wallet Balance";
-           // result.amount = customer.wallet.virtual_balance ;
-            result.walletBalance =customer.wallet.balance;
-            result.liquidBalance = customer.wallet.virtual_balance ;
-            result.lockedBalance = customer.locker_amount;
+            result.amount = customer.wallet.virtual_balance ;
+            result.locker_amount = customer.locker_amount;
             var response = {"success": true, "result": result};
             res.send(response);
             return;
