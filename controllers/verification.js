@@ -126,8 +126,6 @@ exports.verifyAadharNumber = function (req, res) {
                 }
             });
 
-
-
         }
 
 

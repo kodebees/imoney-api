@@ -150,11 +150,15 @@ app.use('/api', router);
 var appEnv = cfenv.getAppEnv();
 
 app.get('*', function(req, res, next) {
+    var errorResponse = {};
+    errorResponse.success=false;
     var error = new Error();
     error.status = 404;
     error.message = "** no imoney here **"
-    next(error);
+    errorResponse.error ={"code":error.status,"message":error.message}
+    next(errorResponse);
 });
+
 app.post('*', function(req, res, next) {
     var error = new Error();
     error.status = 404;
@@ -170,13 +174,13 @@ app.put('*', function(req, res, next) {
 
 
 
-
 app.use(function(err, req, res, next) {
     console.log("Handling error");
-    console.log(err);
-    err.success = false;
     var ErrorResult = {};
+    console.log(err);
     ErrorResult.success = false;
+
+   // ErrorResult.success = false;
     ErrorResult.error ={"code":err.status,"message":err.message}
     switch (err.status)
     {
@@ -191,14 +195,14 @@ app.use(function(err, req, res, next) {
             console.log(err);
             break;
         case 102: //Model error
-            res.send(err || "invalid appid");
+            res.send(ErrorResult || "invalid appid");
             break;
         case 103:
-            res.send(err || "invalid parameter");
+            res.send(ErrorResult || "invalid parameter");
             console.log(err);
             break;
         case 104:
-            res.send(err || "invalid device ");
+            res.send(ErrorResult || "invalid device ");
             break;
         case 105:
             var error ={};
