@@ -14,6 +14,7 @@ exports.updateDevice = function (req, res) {
         if (err) {
             console.log("Error" + err);
           //return res.send(401, {error: err});
+
             var ErrorResult = {};
             ErrorResult.success = false;
             ErrorResult.error ={"code":err.status,"message":err.message};
