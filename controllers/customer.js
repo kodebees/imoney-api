@@ -172,10 +172,13 @@ exports.getBalance = function(req,res){
         }
         if (customer) {
             console.log(customer);
+
             var result = {};
             result.message = "Wallet Balance";
-            result.amount = customer.wallet.virtual_balance ;
-            result.locker_amount = customer.locker_amount;
+           // result.amount = customer.wallet.virtual_balance ;
+            result.walletBalance =customer.wallet.balance;
+            result.liquidBalance = customer.wallet.virtual_balance ;
+            result.lockedBalance = customer.locker_amount;
             var response = {"success": true, "result": result};
             res.send(response);
             return;
