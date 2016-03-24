@@ -175,6 +175,9 @@ app.use(function(err, req, res, next) {
     console.log("Handling error");
     console.log(err);
     err.success = false;
+    var ErrorResult = {};
+    ErrorResult.success = false;
+    ErrorResult.error ={"code":err.status,"message":err.message}
     switch (err.status)
     {
 
@@ -183,10 +186,11 @@ app.use(function(err, req, res, next) {
             res.sendfile('./admin/index.html');
             break;
         case 101://undefined
-            res.send(err || "invalid parameter");
+            console.log("Error code 101");
+            res.send(ErrorResult || "invalid parameter");
             console.log(err);
             break;
-        case 102:
+        case 102: //Model error
             res.send(err || "invalid appid");
             break;
         case 103:
@@ -204,6 +208,7 @@ app.use(function(err, req, res, next) {
             res.send(error)
 
         default :
+            console.log("Default error throwm");
             next();
     }
 

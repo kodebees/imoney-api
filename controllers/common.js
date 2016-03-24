@@ -4,7 +4,8 @@ var Config = require('../configs/config');
 var isHeaderExist = function (req,headerName, success_callback, error_callback) {
     console.log("checking header " + headerName);
     console.log(req.headers[headerName]);
-    if (req.headers[headerName] == undefined) {
+    if ( typeof (req.headers[headerName])   == "undefined") {
+        console.log("throwing error");
         var err = new Error();
         err.status = 101; //undefined
         err.message = "Invalid parameter in header refer api doc";
@@ -57,7 +58,9 @@ exports.checkApiKey = function (req, res, next) {
            next(err1);
 
        }
-   });
+   },function(error){
+        next(error);
+    });
 
 };
 
