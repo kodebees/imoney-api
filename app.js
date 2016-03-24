@@ -156,7 +156,7 @@ app.get('*', function(req, res, next) {
     error.status = 404;
     error.message = "** no imoney here **"
     errorResponse.error ={"code":error.status,"message":error.message}
-    next(errorResponse);
+    next(error);
 });
 
 app.post('*', function(req, res, next) {
