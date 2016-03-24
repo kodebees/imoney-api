@@ -36,7 +36,7 @@ exports.createiMoneyWallet = function (customer,on_success,on_error) {
  							 + customer.deviceInfo.uuid +"/"
  							 + customer.deviceInfo.imei +"/"
  							 + "sureshrgopal@gmail.com" + "/"
- 							 + "2671af561974"
+ 							 + "de515d615454"
 	/*  + process.env.client_id +"/"
  							 + process.env.auth_token*/
 

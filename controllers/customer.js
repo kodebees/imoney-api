@@ -12,8 +12,14 @@ exports.updateDevice = function (req, res) {
 
     mobileVerification.findById(vid, function (err, doc) {
         if (err) {
-            console.log("error" + err);
-            return res.send(401, {error: err});
+            console.log("Error" + err);
+          //return res.send(401, {error: err});
+            var ErrorResult = {};
+            ErrorResult.success = false;
+            ErrorResult.error ={"code":err.status,"message":err.message};
+            res.send(ErrorResult);
+
+            return;
         }
         if (!doc) {
             var errorResponse = {
@@ -27,8 +33,16 @@ exports.updateDevice = function (req, res) {
         if (doc.verification_code == vcode && doc.mobile_number == number) {
             Customer.findByIdAndUpdate(customerId, {is_phone_verified: true, deviceInfo: deviceInfo}, function (err, customer) {
                 if (err) {
-                    console.log("Error")
-                    return res.status(600).send({error: err});
+                  console.log("Error");
+                    var ErrorResult = {};
+                    console.log(err);
+                    ErrorResult.success = false;
+
+                    // ErrorResult.success = false;
+                    ErrorResult.error ={"code":err.status,"message":err.message};
+                    res.send(ErrorResult);
+                    return;
+
                 }
                 if (customer) {
 
@@ -36,27 +50,42 @@ exports.updateDevice = function (req, res) {
 
                     blueMixBrokerController.createiMoneyWallet(customer,function(response){
 
-                   
-
-                    try{
+                   try{
 
                         customer.wallet.id = response.WalletDetails[0].auth_data;
+                       console.log(customer.wallet.id)
                         customer.save();
-                         var result = {};
-                        result.message = "iMoney Wallet Created Successfully";
-                        var wallet_response = commonController.composeSuccessResponse(result);
+                       var wallet_response = {};
+
+                       wallet_response.sucess = true;
+
+                       wallet_response.result = {"message": "mobile number verified / iMoney Wallet Created Successfully","walletId": customer.wallet.id};
+                       //var result = {};
+                       // result.message = "mobile number verified / iMoney Wallet Created Successfully";
+
+                       // var wallet_response = commonController.composeSuccessResponse(result);
                         res.send(wallet_response);
 
                         return;
 
                     }catch(e){
 
-                        console.log('Exception:' ,e);
-                        var result = {};
-                        result.message = "iMoney Wallet Creation Failed";
+                        console.log('Exception:',e);
+
+                       // var result = {};
+                       // result.message = "iMoney Wallet Creation Failed";
+
+                       var wallet_response = {};
+
+                       wallet_response.sucess = true;
+
+                       wallet_response.result = {"message": "mobile number verified /iMoney Wallet Creation Failed"};
+
+
+
                         //ToDo once icici give stable response un commnet the below line
                       //  var wallet_response = commonController.composeFailureResponse(result);
-                        var wallet_response = commonController.composeSuccessResponse(result);
+                       // var wallet_response = commonController.composeSuccessResponse(result);
                         res.send(wallet_response);
                         return;
                     }
@@ -64,9 +93,17 @@ exports.updateDevice = function (req, res) {
 
                     },function(error){
 
-                        var result = {};
-                        result.message = "iMoney Wallet Creation Failed";
-                        var wallet_response = commonController.composeFailureResponse(result);
+                       // var result = {};
+                        //result.message = "iMoney Wallet Creation Failed";
+                       // var wallet_response = commonController.composeFailureResponse(result);
+
+                        var wallet_response = {};
+
+                        wallet_response.sucess = true;
+
+                        wallet_response.result = {"message": "mobile number verified /iMoney Wallet Creation Failed"};
+
+
                         res.send(wallet_response);
                         return;
 
