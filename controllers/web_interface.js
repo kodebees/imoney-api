@@ -3,6 +3,8 @@ var mobileVerification = require('../models/mobile_verification');
 var aadharVerification = require('../models/aadhar_verification');
 var Aadhar = require('../models/aadhar');
 var Customer = require('../models/customer');
+var Config = require('../configs/config');
+var Common = require('./common');
 
 var unirest = require('unirest');
 
@@ -81,7 +83,14 @@ exports.creditImoney = function (req, res) {
             customer.wallet.balance += credit_amount;
             result.balance = customer.wallet.balance;
             result.locker_amount = customer.locker_amount;
+
             customer.save();
+            var template = {};
+            var receiverBalanceData={};
+            receiverBalanceData.balance = customer.wallet.balance;
+            receiverBalanceData.locker_amount=customer.locker_amount;
+            receiverBalanceData.message="Rs."+customer.wallet.balance+" credited to your wallet";
+            Common.sendPushNotification(receiverBalanceData,customer.deviceInfo.push_token);
 
             var response = {"success": true, "result": result};
             res.send(response);
