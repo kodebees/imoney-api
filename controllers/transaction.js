@@ -58,12 +58,12 @@ var transferAmount = function (details, success_callback, error_callback) {
                     result.balance = customer.wallet.virtual_balance;
                     result.locker_amount = customer.locker_amount;
 
-                    var genCode = random.integer(1000,9999);
+                  /*  var genCode = random.integer(1000,9999);
                     console.log("Genreated Transaction code is "+genCode);
                     customer.transactions.transaction_id=genCode;
                     receiver.transactions.transaction_id=genCode;
                     result.transaction_id=customer.transactions.transaction_id;
-
+*/
                     //Updating the Wallet balance for sender
                     customer.save();
                     //Updating the Wallet balance for receiver
