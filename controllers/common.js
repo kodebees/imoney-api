@@ -1,6 +1,6 @@
 var Customer = require('../models/customer');
 var Config = require('../configs/config');
-
+var gcm = require('node-gcm');
 var isHeaderExist = function (req,headerName, success_callback, error_callback) {
     console.log("checking header " + headerName);
     console.log(req.headers[headerName]);
@@ -186,6 +186,43 @@ exports.isValidReceiver = function (req, res, next) {
     });
 
 };
+exports.sendGateWayPushNotification =function(data){
+    var gcmId = [];
+    console.log(data);
+    gcmId.push("APA91bEAa3BvECw3VJGUK3Xinx0FynrOTMzhmMcsGjWC0UOsNUfc8dAbDwGrBslwSP6J9hefoN0RoFiR78tIi1Dv7HDQr09N9BEE_rf6XxUxkUBDPUXWgSgIAx_8uApMtUsSJzY__Nxm");
+  var message = new gcm.Message({
+        collapseKey: 'demo',
+        delayWhileIdle: true,
+        timeToLive: 3,
+        dryRun:false,
+        data: data
+    });
+    var sender = new gcm.Sender(Config.GCM_API_KEY);
+    sender.send(message, gcmId, 4, function (err, result) {
+        console.log(result);
+        console.log(result);
+    });
+}
+exports.sendPushNotification=function(data,pushToken){
+    var gcmId = [];
+
+    gcmId.push(pushToken);
+
+    var message = new gcm.Message({
+        collapseKey: 'demo',
+        delayWhileIdle: true,
+        timeToLive: 3,
+        dryRun:false,
+        data: data
+    });
+    var sender = new gcm.Sender(Config.GCM_API_KEY);
+    sender.send(message, gcmId, 4, function (err, result) {
+        console.log(result);
+
+
+        console.log(result);
+    });
+}
 exports.composeSuccessResponse = function (res) {
 
     var response = {"success": true, "result": res};

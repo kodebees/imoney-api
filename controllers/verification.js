@@ -5,6 +5,7 @@ var Customer = require('../models/customer');
 var Aadhar = require('../models/aadhar');
 var unirest = require('unirest');
 var gcm = require('node-gcm');
+var Common = require('./common');
 
 exports.verifyAadharNumber = function (req, res) {
     console.log("Verfiy aadharnumber " + req.body.aadhar_number);
@@ -161,51 +162,17 @@ exports.verifyMobileNumber = function (req, res) {
 
         }
         else {
+             var template = {};
             var result = {};
-            var gcmId = [];
-           // var push_token = "APA91bFgArM4TQJnrPFbGP3mofo-6AffFtMBsLkQWHhC7oV983dxfrU5jeTTz6Zi6RtIpKdlOVuI0ervu3dXj4XAA5GipWRoDc6PE0B0XBi8c0IeLlKUiUbQB7ThQfkHeF050rFcq2yB";
-            gcmId.push("APA91bEAa3BvECw3VJGUK3Xinx0FynrOTMzhmMcsGjWC0UOsNUfc8dAbDwGrBslwSP6J9hefoN0RoFiR78tIi1Dv7HDQr09N9BEE_rf6XxUxkUBDPUXWgSgIAx_8uApMtUsSJzY__Nxm");
             result.verification_id = doc._id;
-            result.message = "verification"
+            result.message = "Message sent successfully"
             //Todo comment bellow line on production
             result.code = doc.verification_code;
-            result.mobile_number = mobile_number;
-            //var template = "Welcome to IMoney, your verification code is " + result.code;
-            var message = new gcm.Message({
-                collapseKey: 'demo',
-                delayWhileIdle: true,
-                timeToLive: 3,
-                dryRun:false,
-                data: result
-            });
-            var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
-            sender.send(message, gcmId, 4, function (err, result) {
-                console.log(result);
+            template.message = "Your verification code is "+doc.verification_code;
+            template.mobile_number = mobile_number;
+            Common.sendGateWayPushNotification(template);
 
 
-                console.log(result);
-            });
-
-
-            // GET a resource
-           // var SMSApiUrl = "http://api.mVaayoo.com/mvaayooapi/MessageCompose";
-            /* unirest.get(SMSApiUrl)
-             .query({'user': 'veuontechnologies@gmail.com:wordpass321'})
-             .query({'senderID': 'VEUONT'})
-             .query({'receipientno':doc.mobile_number})
-             .query({'dcs': '0'})
-             .query({'msgtxt': template})
-             .query({'state': '4'})
-             .end(function(res) {
-             if (res.error) {
-             console.log('GET error', res.error);
-
-             } else {
-             console.log('GET response', res.body)
-
-             }
-
-             })*/
             var response = {"success": true, "result": result};
 
             console.log("Verification code for " + doc.mobile_number + " is " + doc.verification_code)

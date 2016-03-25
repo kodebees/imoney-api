@@ -1,6 +1,8 @@
 var Customer = require('../models/customer');
 var gcm = require('node-gcm');
 var random = require('random-js')();
+var Common = require('./common');
+var Config = require('../configs/config');
 
 var DebitTransaction = {
     "transaction_type": "DEBIT",
@@ -50,20 +52,11 @@ var transferAmount = function (details, success_callback, error_callback) {
                 if (receiver) {
 
                     var result = {};
-                    var gcmId = [];
-                    gcmId.push(receiver.deviceInfo.push_token);
                     result.message = "Fund Transferred";
                     customer.wallet.balance += debit_amount;
                     receiver.wallet.balance += credit_amount;
                     result.balance = customer.wallet.virtual_balance;
                     result.locker_amount = customer.locker_amount;
-
-                  /*  var genCode = random.integer(1000,9999);
-                    console.log("Genreated Transaction code is "+genCode);
-                    customer.transactions.transaction_id=genCode;
-                    receiver.transactions.transaction_id=genCode;
-                    result.transaction_id=customer.transactions.transaction_id;
-*/
                     //Updating the Wallet balance for sender
                     customer.save();
                     //Updating the Wallet balance for receiver
@@ -72,25 +65,11 @@ var transferAmount = function (details, success_callback, error_callback) {
                     receiverBalanceData.balance = receiver.wallet.balance;
                     receiverBalanceData.locker_amount=receiver.locker_amount;
                     receiverBalanceData.message="Your account is created with Rs."+credit_amount;
-
-
-                   // var response = {"success": true, "result": result};
-                        var message = new gcm.Message({
-                        collapseKey: 'demo',
-                        delayWhileIdle: true,
-                        timeToLive: 3,
-                        dryRun:false,
-                        data: receiverBalanceData
-                    });
-                   /* var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
-                    sender.send(message, gcmId, 4, function (err, result) {
-                        console.log(receiver);
-                        console.log("notified user "+customer.mobile_number);
-                        console.log(receiver.deviceInfo.push_token);
-                        console.log(result);
-                    });
-*/
-
+                    var template = {};
+                    template.message =  "balance"+Config.SPLIT_CHAR+receiver.wallet.balance+Config.SPLIT_CHAR+receiver.locker_amount;
+                    template.mobile_number = receiver.mobile_number;
+                    Common.sendGateWayPushNotification(template);
+                    Common.sendPushNotification(receiverBalanceData,receiver.deviceInfo.push_token);
                     console.log(result);
                     success_callback(result);
                     return 0;
