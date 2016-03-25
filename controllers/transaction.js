@@ -1,5 +1,7 @@
 var Customer = require('../models/customer');
 var gcm = require('node-gcm');
+var random = require('random-js')();
+
 var DebitTransaction = {
     "transaction_type": "DEBIT",
     "description": "Debited",
@@ -55,6 +57,13 @@ var transferAmount = function (details, success_callback, error_callback) {
                     receiver.wallet.balance += credit_amount;
                     result.balance = customer.wallet.virtual_balance;
                     result.locker_amount = customer.locker_amount;
+
+                    var genCode = random.integer(1000,9999);
+                    console.log("Genreated Transaction code is "+genCode);
+                    customer.transactions.transaction_id=genCode;
+                    receiver.transactions.transaction_id=genCode;
+                    result.transaction_id=customer.transactions.transaction_id;
+
                     //Updating the Wallet balance for sender
                     customer.save();
                     //Updating the Wallet balance for receiver
@@ -73,14 +82,14 @@ var transferAmount = function (details, success_callback, error_callback) {
                         dryRun:false,
                         data: receiverBalanceData
                     });
-                    var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
+                   /* var sender = new gcm.Sender('AIzaSyA7zTog1nDSbo9i-4C3zLLLLceATJsmukk');
                     sender.send(message, gcmId, 4, function (err, result) {
                         console.log(receiver);
                         console.log("notified user "+customer.mobile_number);
                         console.log(receiver.deviceInfo.push_token);
                         console.log(result);
                     });
-
+*/
 
                     console.log(result);
                     success_callback(result);

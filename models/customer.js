@@ -71,7 +71,8 @@ var customerSchema = new Schema({
             redeem_flag :{type:Boolean, default: 0},
             created_datetime: {type: Date, default: Date.now},
             customer:{type:String},
-            name:{type:String}
+            name:{type:String},
+            transaction_id :{type: String}
         }
     ],
 
