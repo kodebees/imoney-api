@@ -72,7 +72,7 @@ var customerSchema = new Schema({
             created_datetime: {type: Date, default: Date.now},
             customer:{type:String},
             name:{type:String},
-            transaction_id :{type: String}
+            transaction_id :{type: String,default:1234}
         }
     ],
 
