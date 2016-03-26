@@ -32,7 +32,7 @@ exports.updateDevice = function (req, res) {
         }
 
         if (doc.verification_code == vcode && doc.mobile_number == number) {
-            Customer.findByIdAndUpdate(customerId, {is_phone_verified: true, deviceInfo: deviceInfo}, function (err, customer) {
+            Customer.findByIdAndUpdate(customerId, {mobile_number:number,is_phone_verified: true, deviceInfo: deviceInfo}, function (err, customer) {
                 if (err) {
                   console.log("Error");
                     var ErrorResult = {};

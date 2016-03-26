@@ -32,6 +32,7 @@
         $scope.showme=true;
         $scope.cutomerId ={};
         $scope.customerName={};
+        $scope.aadhar ={};
 
         // when submitting the add form, send the text to the node API
         $scope.loadCustomer = function() {
@@ -98,6 +99,33 @@
                         console.log('Error: ' + data);
                     });
         };*/
+        $scope.CreateAadhar =function(){
+
+            $http.post('/api/aadhar',$scope.aadhar,
+                    {headers: { 'Content-Type':'application/json','appid':'123'}
+
+                    })
+                    .success(function(data) {
+                        if(data.success){
+                        alert("Dummy Aadhar Created Successfully");
+                        $scope.aadhar = {}; // clear the form so our user is ready to enter another
+                        console.log(data);
+                        }
+                        else{
+                            alert("Validation error see console");
+                            $scope.aadhar = {}; // clear the form so our user is ready to enter another
+                            console.log(data);
+                        }
+
+
+                    })
+                    .error(function(data) {
+                        alert("Validation error see console");
+                        console.log('Error: ' + data);
+                    });
+        };
+
+
 
     }
 
@@ -126,7 +154,46 @@
                 </div>
                 <!-- createToDo() WILL CREATE NEW TODOS -->
                 <button type="submit" class="btn btn-primary btn-lg" ng-click="loadCustomer()">Load Customer</button>
+                <button class="btn btn-success btn-lg"ng-show="!createAadhar" ng-click="createAadhar=true">Dummy Aadhar</button>
+                <button class="btn btn-success btn-lg" ng-show="createAadhar" ng-click="createAadhar=false">Hide Create </button>
             </form>
+        </div>
+
+    </div>
+
+    <div id="aadhar-form" class="row" ng-init="createAadhar=false" ng-show="createAadhar">
+
+        <div class="col-sm-8 col-sm-offset-2 text-center" >
+            <form>
+                <div class="form-group">
+
+                    <ul class="list-group">
+                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+
+                        <li class="list-group-item active">Create Dummy Aadhar Information</li>
+
+                        <li class="list-group-item">Aaadhar Number : <input type="number" required="true" ng-model="aadhar.uid">
+                        <li class="list-group-item">Mobile Number : <input type="number" required="true" ng-model="aadhar.phone">
+
+                        <li class="list-group-item">First Name : <input type="text" required="true" ng-model="aadhar.first_name">
+                        <li class="list-group-item">Last Name : <input type="text" required="true" ng-model="aadhar.last_name">
+                        <li class="list-group-item">Gender : <input type="text" required="true" ng-model="aadhar.gender">
+                        <li class="list-group-item">Email : <input type="text" required="true" ng-model="aadhar.email">
+                        <li class="list-group-item">Street : <input type="text" required="true" ng-model="aadhar.vtc">
+                        <li class="list-group-item">Date of Birth: <input type="text" required="true" ng-model="aadhar.dob">
+                        <li class="list-group-item">District : <input type="text" required="true" ng-model="aadhar.district">
+                        <li class="list-group-item">State: <input type="text" required="true" ng-model="aadhar.state">
+                        <li class="list-group-item">Pincode : <input type="number" required="true" ng-model="aadhar.pincode">
+
+                    </ul>
+
+
+                </div>
+
+                <!-- createToDo() WILL CREATE NEW TODOS -->
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="CreateAadhar()">Add Aadhar</button>
+            </form>
+
         </div>
 
     </div>
